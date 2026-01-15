@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Retroalimentación del Propietario MG ZS</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .chart-card h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .summary {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+        }
+
+        .summary h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .summary-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .summary-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .summary-item p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Panel de Control de Retroalimentación del Propietario MG ZS</h1>
+            <p>Análisis de 65 Respuestas de Propietarios • Información del Mundo Real</p>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number">65</div>
+                <div class="stat-label">Respuestas Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">14</div>
+                <div class="stat-label">Países</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">68%</div>
+                <div class="stat-label">Compraría de Nuevo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4.3/5</div>
+                <div class="stat-label">Confiabilidad Promedio</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📊 ¿Compraría de Nuevo?</h3>
+                <div class="chart-container">
+                    <canvas id="buyAgainChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⭐ Distribución de Calificación de Confiabilidad</h3>
+                <div class="chart-container">
+                    <canvas id="reliabilityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>🌍 Países Principales por Número de Respuestas</h3>
+                <div class="chart-container">
+                    <canvas id="countriesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⛽ Consumo de Combustible vs Duración de Propiedad</h3>
+                <div class="chart-container">
+                    <canvas id="fuelChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⛽ Consumo de Combustible por Tipo de Conducción</h3>
+                <div class="chart-container">
+                    <canvas id="fuelTypeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⚠️ Problemas Comunes Reportados</h3>
+                <div class="chart-container">
+                    <canvas id="issuesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>📈 Información Clave</h2>
+            <div class="summary-content">
+                <div class="summary-item">
+                    <h4>Satisfacción General</h4>
+                    <p>El 68% de los propietarios compraría el MG ZS nuevamente, con una calificación promedio de confiabilidad de 4.3/5 estrellas. Esto indica una satisfacción general fuerte con el vehículo.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Experiencia de Conducción</h4>
+                    <p>La calificación promedio de experiencia de conducción es 4.4/5. La mayoría de los propietarios aprecian la comodidad y el manejo, aunque algunos mencionan problemas con el revolucionamiento del motor en colinas.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Distribución Geográfica</h4>
+                    <p>Reino Unido y España tienen la mayoría de respuestas (15 y 14 respectivamente), seguidos por Italia (9) y Grecia (5). La retroalimentación es consistente en todas las regiones.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Preocupaciones Comunes</h4>
+                    <p>El problema más mencionado es el sobre-revolucionamiento (especialmente en colinas/autopistas) cuando se carga la batería. Este es un comportamiento híbrido normal pero algunos lo encuentran preocupante.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Eficiencia de Combustible</h4>
+                    <p>El consumo promedio de combustible es de aproximadamente 5.4 L/100km (típico para este modelo híbrido). La conducción en ciudad generalmente muestra mejor eficiencia que la autopista.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Duración de la Propiedad</h4>
+                    <p>El período promedio de propiedad es de 5.4 meses (muchas compras recientes). Los propietarios a largo plazo (10+ meses) califican consistentemente el vehículo alto (4-5 estrellas).</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Consumo de Combustible por Estilo de Conducción</h4>
+                    <p>Conducción mixta (más común): 5.53 L/100km. La conducción en ciudad promedios 5.81 L/100km. Conducción en autopista más eficiente a 5.60 L/100km. La eficiencia híbrida depende de patrones de conducción.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Preocupación Principal: Sobre-revolucionamiento</h4>
+                    <p>El 18% de los propietarios reportan sobre-revolucionamiento (4-5.5k RPM) en colinas y autopistas. Este es un comportamiento normal de carga de batería híbrida pero causa preocupación debido al ruido del motor. Las actualizaciones de software han reducido este problema.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Panel de control impulsado por datos limpios de Google Forms • Última actualización: Enero 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js color palette
+        const colors = {
+            primary: '#667eea',
+            success: '#4caf50',
+            warning: '#ff9800',
+            danger: '#f44336',
+            info: '#2196f3'
+        };
+
+        // Buy Again - Pie Chart
+        const buyAgainCtx = document.getElementById('buyAgainChart').getContext('2d');
+        new Chart(buyAgainCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sí', 'Tal vez', 'No'],
+                datasets: [{
+                    data: [44, 13, 8],
+                    backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+                    borderColor: ['#45a049', '#fb8c00', '#da190b'],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Reliability Distribution - Horizontal Bar
+        const reliabilityCtx = document.getElementById('reliabilityChart').getContext('2d');
+        new Chart(reliabilityCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1 Estrella', '2 Estrellas', '3 Estrellas', '4 Estrellas', '5 Estrellas'],
+                datasets: [{
+                    label: 'Número de Respuestas',
+                    data: [1, 2, 4, 8, 47],
+                    backgroundColor: [
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(156, 204, 101, 0.8)',
+                        'rgba(76, 175, 80, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(244, 67, 54)',
+                        'rgb(255, 152, 0)',
+                        'rgb(255, 193, 7)',
+                        'rgb(156, 204, 101)',
+                        'rgb(76, 175, 80)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 10 }
+                    }
+                }
+            }
+        });
+
+        // Countries - Horizontal Bar
+        const countriesCtx = document.getElementById('countriesChart').getContext('2d');
+        new Chart(countriesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Reino Unido', 'España', 'Italia', 'Grecia', 'Australia', 'Otros'],
+                datasets: [{
+                    label: 'Número de Respuestas',
+                    data: [15, 14, 9, 5, 2, 17],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(76, 175, 80, 0.8)',
+                        'rgba(33, 150, 243, 0.8)',
+                        'rgba(156, 39, 176, 0.8)'
+                    ],
+                    borderRadius: 6,
+                    borderWidth: 2,
+                    borderColor: ['#2962cc', '#e65100', '#c62828', '#1b5e20', '#0d47a1', '#4a148c']
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 2 }
+                    }
+                }
+            }
+        });
+
+        // Fuel Consumption vs Ownership - Scatter
+        const fuelCtx = document.getElementById('fuelChart').getContext('2d');
+        new Chart(fuelCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: 'Confiabilidad: 5/5',
+                        data: [
+                            {x: 2, y: 6, r: 8}, {x: 13, y: 5.1, r: 8}, {x: 6, y: 4.5, r: 8},
+                            {x: 4, y: 6.2, r: 8}, {x: 3, y: 6.4, r: 8}, {x: 4, y: 5.5, r: 8},
+                            {x: 2, y: 5, r: 8}, {x: 7, y: 4.9, r: 8}, {x: 8, y: 7, r: 8}
+                        ],
+                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                        borderColor: 'rgb(76, 175, 80)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Confiabilidad: 4/5',
+                        data: [
+                            {x: 3.5, y: 5.9, r: 7}, {x: 4, y: 5.5, r: 7}, {x: 2, y: 5.3, r: 7},
+                            {x: 1, y: 6.5, r: 7}, {x: 7, y: 5.6, r: 7}, {x: 3, y: 6, r: 7}
+                        ],
+                        backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                        borderColor: 'rgb(255, 193, 7)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Confiabilidad: 3/5',
+                        data: [
+                            {x: 3, y: 6.2, r: 6}
+                        ],
+                        backgroundColor: 'rgba(255, 152, 0, 0.6)',
+                        borderColor: 'rgb(255, 152, 0)',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { padding: 15, font: { size: 12 } }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Duración de Propiedad (meses)' },
+                        beginAtZero: true
+                    },
+                    y: {
+                        title: { display: true, text: 'Consumo de Combustible (L/100km)' },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Fuel by Driving Type - Horizontal Bar
+        const fuelTypeCtx = document.getElementById('fuelTypeChart').getContext('2d');
+        new Chart(fuelTypeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mixto (41 propietarios)', 'Ciudad (16 propietarios)', 'Autopista (3 propietarios)'],
+                datasets: [{
+                    label: 'Consumo de Combustible (L/100km)',
+                    data: [5.53, 5.81, 5.60],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(76, 175, 80, 0.8)'
+                    ],
+                    borderColor: ['#3d5afe', '#e65100', '#1b5e20'],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 7,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        // Common Issues - Horizontal Bar
+        const issuesCtx = document.getElementById('issuesChart').getContext('2d');
+        new Chart(issuesCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Sobre-revolucionamiento\n(18%)',
+                    'Ruido del motor\n(12%)',
+                    'Comportamiento batería\n(5%)',
+                    'Insonorización pobre\n(5%)',
+                    'Pérdida de potencia\n(3%)',
+                    'Ruido de paneles\n(3%)'
+                ],
+                datasets: [{
+                    label: 'Número de Reportes',
+                    data: [12, 8, 3, 3, 2, 2],
+                    backgroundColor: [
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(244, 67, 54, 0.7)',
+                        'rgba(255, 152, 0, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(244, 67, 54)',
+                        'rgb(244, 67, 54)',
+                        'rgb(255, 152, 0)',
+                        'rgb(255, 152, 0)',
+                        'rgb(244, 67, 54)',
+                        'rgb(255, 152, 0)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 2 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

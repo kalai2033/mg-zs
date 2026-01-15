@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Feedback Proprietari MG ZS</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .chart-card h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .summary {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+        }
+
+        .summary h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .summary-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .summary-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .summary-item p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Dashboard Feedback Proprietari MG ZS</h1>
+            <p>Analisi di 65 Risposte Proprietari • Informazioni Mondo Reale</p>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number">65</div>
+                <div class="stat-label">Risposte Totali</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">14</div>
+                <div class="stat-label">Paesi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">68%</div>
+                <div class="stat-label">Comprerebbe di Nuovo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4.3/5</div>
+                <div class="stat-label">Affidabilità Media</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📊 Comprerebbe di Nuovo?</h3>
+                <div class="chart-container">
+                    <canvas id="buyAgainChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⭐ Distribuzione Valutazioni Affidabilità</h3>
+                <div class="chart-container">
+                    <canvas id="reliabilityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>🌍 Principali Paesi per Numero di Risposte</h3>
+                <div class="chart-container">
+                    <canvas id="countriesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⛽ Consumo Carburante vs Durata Proprietà</h3>
+                <div class="chart-container">
+                    <canvas id="fuelChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⛽ Consumo Carburante per Tipo di Guida</h3>
+                <div class="chart-container">
+                    <canvas id="fuelTypeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>⚠️ Problemi Comuni Segnalati</h3>
+                <div class="chart-container">
+                    <canvas id="issuesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>📈 Analisi Chiave</h2>
+            <div class="summary-content">
+                <div class="summary-item">
+                    <h4>Soddisfazione Generale</h4>
+                    <p>Il 68% dei proprietari comprerebbe nuovamente la MG ZS, con una valutazione media di affidabilità di 4.3/5 stelle. Ciò indica una forte soddisfazione complessiva del veicolo.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Esperienza di Guida</h4>
+                    <p>La valutazione media dell'esperienza di guida è 4.4/5. La maggior parte dei proprietari apprezza il comfort e la maneggevolezza, sebbene alcuni menzionino problemi con il regime del motore in salita.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Distribuzione Geografica</h4>
+                    <p>Regno Unito e Spagna hanno il maggior numero di risposte (15 e 14 rispettivamente), seguiti da Italia (9) e Grecia (5). Il feedback è coerente in tutte le regioni.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Preoccupazioni Comuni</h4>
+                    <p>Il problema più segnalato è il regime elevato del motore (specialmente in salita/autostrada) quando si carica la batteria. Questo è un comportamento normale dei veicoli ibridi ma alcuni lo trovano preoccupante.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Efficienza del Carburante</h4>
+                    <p>Il consumo medio di carburante è circa 5.4 L/100km (tipico per questo modello ibrido). La guida in città generalmente mostra migliore efficienza rispetto all'autostrada.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Durata della Proprietà</h4>
+                    <p>Il periodo medio di proprietà è 5.4 mesi (molti acquisti recenti). I proprietari a lungo termine (10+ mesi) valutano costantemente il veicolo con voti alti (4-5 stelle).</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Consumo Carburante per Stile di Guida</h4>
+                    <p>Guida mista (più comune): 5.53 L/100km. Guida in città in media 5.81 L/100km. Guida in autostrada più efficiente a 5.60 L/100km. L'efficienza ibrida dipende dai modelli di guida.</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Preoccupazione Principale: Regime Elevato</h4>
+                    <p>Il 18% dei proprietari segnala regime elevato (4-5.5k RPM) in salita e autostrada. Questo è un comportamento normale di carica della batteria ibrida ma causa preoccupazione per il rumore del motore. Gli aggiornamenti software hanno ridotto questo problema.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Dashboard fornito da dati Google Forms puliti • Ultimo aggiornamento: Gennaio 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js color palette
+        const colors = {
+            primary: '#667eea',
+            success: '#4caf50',
+            warning: '#ff9800',
+            danger: '#f44336',
+            info: '#2196f3'
+        };
+
+        // Buy Again - Pie Chart
+        const buyAgainCtx = document.getElementById('buyAgainChart').getContext('2d');
+        new Chart(buyAgainCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sì', 'Forse', 'No'],
+                datasets: [{
+                    data: [44, 13, 8],
+                    backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+                    borderColor: ['#45a049', '#fb8c00', '#da190b'],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Reliability Distribution - Horizontal Bar
+        const reliabilityCtx = document.getElementById('reliabilityChart').getContext('2d');
+        new Chart(reliabilityCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1 Stella', '2 Stelle', '3 Stelle', '4 Stelle', '5 Stelle'],
+                datasets: [{
+                    label: 'Numero di Risposte',
+                    data: [1, 2, 4, 8, 47],
+                    backgroundColor: [
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(156, 204, 101, 0.8)',
+                        'rgba(76, 175, 80, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(244, 67, 54)',
+                        'rgb(255, 152, 0)',
+                        'rgb(255, 193, 7)',
+                        'rgb(156, 204, 101)',
+                        'rgb(76, 175, 80)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 10 }
+                    }
+                }
+            }
+        });
+
+        // Countries - Horizontal Bar
+        const countriesCtx = document.getElementById('countriesChart').getContext('2d');
+        new Chart(countriesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Regno Unito', 'Spagna', 'Italia', 'Grecia', 'Australia', 'Altre'],
+                datasets: [{
+                    label: 'Numero di Risposte',
+                    data: [15, 14, 9, 5, 2, 17],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(76, 175, 80, 0.8)',
+                        'rgba(33, 150, 243, 0.8)',
+                        'rgba(156, 39, 176, 0.8)'
+                    ],
+                    borderRadius: 6,
+                    borderWidth: 2,
+                    borderColor: ['#2962cc', '#e65100', '#c62828', '#1b5e20', '#0d47a1', '#4a148c']
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 2 }
+                    }
+                }
+            }
+        });
+
+        // Fuel Consumption vs Ownership - Scatter
+        const fuelCtx = document.getElementById('fuelChart').getContext('2d');
+        new Chart(fuelCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: 'Affidabilità: 5/5',
+                        data: [
+                            {x: 2, y: 6, r: 8}, {x: 13, y: 5.1, r: 8}, {x: 6, y: 4.5, r: 8},
+                            {x: 4, y: 6.2, r: 8}, {x: 3, y: 6.4, r: 8}, {x: 4, y: 5.5, r: 8},
+                            {x: 2, y: 5, r: 8}, {x: 7, y: 4.9, r: 8}, {x: 8, y: 7, r: 8}
+                        ],
+                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                        borderColor: 'rgb(76, 175, 80)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Affidabilità: 4/5',
+                        data: [
+                            {x: 3.5, y: 5.9, r: 7}, {x: 4, y: 5.5, r: 7}, {x: 2, y: 5.3, r: 7},
+                            {x: 1, y: 6.5, r: 7}, {x: 7, y: 5.6, r: 7}, {x: 3, y: 6, r: 7}
+                        ],
+                        backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                        borderColor: 'rgb(255, 193, 7)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Affidabilità: 3/5',
+                        data: [
+                            {x: 3, y: 6.2, r: 6}
+                        ],
+                        backgroundColor: 'rgba(255, 152, 0, 0.6)',
+                        borderColor: 'rgb(255, 152, 0)',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { padding: 15, font: { size: 12 } }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Durata Proprietà (mesi)' },
+                        beginAtZero: true
+                    },
+                    y: {
+                        title: { display: true, text: 'Consumo Carburante (L/100km)' },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Fuel by Driving Type - Horizontal Bar
+        const fuelTypeCtx = document.getElementById('fuelTypeChart').getContext('2d');
+        new Chart(fuelTypeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mista (41 proprietari)', 'Città (16 proprietari)', 'Autostrada (3 proprietari)'],
+                datasets: [{
+                    label: 'Consumo Carburante (L/100km)',
+                    data: [5.53, 5.81, 5.60],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(76, 175, 80, 0.8)'
+                    ],
+                    borderColor: ['#3d5afe', '#e65100', '#1b5e20'],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 7,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        // Common Issues - Horizontal Bar
+        const issuesCtx = document.getElementById('issuesChart').getContext('2d');
+        new Chart(issuesCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Regime elevato\n(18%)',
+                    'Rumore motore\n(12%)',
+                    'Comportamento batteria\n(5%)',
+                    'Insonorizzazione scarsa\n(5%)',
+                    'Perdita potenza\n(3%)',
+                    'Rumore pannelli\n(3%)'
+                ],
+                datasets: [{
+                    label: 'Numero di Segnalazioni',
+                    data: [12, 8, 3, 3, 2, 2],
+                    backgroundColor: [
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(244, 67, 54, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(244, 67, 54, 0.7)',
+                        'rgba(255, 152, 0, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(244, 67, 54)',
+                        'rgb(244, 67, 54)',
+                        'rgb(255, 152, 0)',
+                        'rgb(255, 152, 0)',
+                        'rgb(244, 67, 54)',
+                        'rgb(255, 152, 0)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 2 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
