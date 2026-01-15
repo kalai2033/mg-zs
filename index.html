@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG ZS Owner Feedback Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; 
+            padding: 40px 20px; 
+            color: white;
+        }
+        .container { max-width: 1000px; margin: 0 auto; text-align: center; }
+        h1 { font-size: 2.5em; margin-bottom: 20px; }
+        .subtitle { font-size: 1.2em; margin-bottom: 40px; opacity: 0.95; }
+        .dashboard-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 40px; 
+        }
+        .dash-card { 
+            background: rgba(255,255,255,0.1); 
+            padding: 25px; 
+            border-radius: 15px; 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s;
+        }
+        .dash-card:hover { transform: translateY(-5px); }
+        .dash-card h3 { margin-bottom: 15px; font-size: 1.3em; }
+        .dash-link { 
+            display: inline-block; 
+            background: rgba(255,255,255,0.2); 
+            color: white; 
+            padding: 15px 30px; 
+            text-decoration: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s;
+        }
+        .dash-link:hover { background: rgba(255,255,255,0.3); }
+        .data-section { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; margin-top: 30px; }
+        .footer { margin-top: 50px; opacity: 0.8; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 MG ZS Owner Feedback Dashboard</h1>
+        <p class="subtitle">65 Real Owner Responses • Interactive Charts • All Languages</p>
+        
+        <div class="dashboard-grid">
+            <div class="dash-card">
+                <h3>🇺🇸🇬🇧 English</h3>
+                <a href="dashboard.html" class="dash-link">Open Dashboard →</a>
+            </div>
+            <div class="dash-card">
+                <h3>🇪🇸 Spanish</h3>
+                <a href="dashboard_spanish.html" class="dash-link">Abrir Dashboard →</a>
+            </div>
+            <div class="dash-card">
+                <h3>🇮🇹 Italian</h3>
+                <a href="dashboard_italian.html" class="dash-link">Apri Dashboard →</a>
+            </div>
+        </div>
+
+        <div class="data-section">
+            <h3>📊 Download Raw Data</h3>
+            <p><strong>Original survey data:</strong> <a href="mg-zs-feedback-Sheet1.csv" style="color: #4caf50;">Download CSV</a></p>
+            <p><strong>Cleaned analysis data:</strong> <a href="mg-zs-feedback-cleaned_sheet.csv" style="color: #4caf50;">Download CSV</a></p>
+        </div>
+
+        <div class="footer">
+            <p>Interactive dashboard from 65 MG ZS owners • Hosted on GitHub Pages • January 2026</p>
+        </div>
+    </div>
+</body>
+</html>
